@@ -12,7 +12,7 @@ module.exports = merge(base, {
   mode: 'production',
   // devtool : 'source-map', // remove this comment if you want JS source maps
   output: {
-    path: path.resolve(__dirname, '../dist'),
+    path: path.resolve(__dirname, '../../dist'),
     publicPath: '/',
     filename: '[chunkhash].app.js'
   },
@@ -64,8 +64,8 @@ module.exports = merge(base, {
       filename: '[chunkhash].app.css'
     }),
     new HtmlWebpackPlugin({
-      filename: path.resolve(__dirname, '../dist/index.html'),
-      template: path.resolve(__dirname, '../src/index.html'),
+      filename: path.resolve(__dirname, '../../dist/index.html'),
+      template: path.resolve(__dirname, '../../src/index.html'),
       favicon: 'favicon.ico', // or use favicons-webpack-plugin
       minify: {
         removeComments: true,
