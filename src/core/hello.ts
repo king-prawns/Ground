@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
 
-const hello = (): void => console.log('Hello world!');
+const hello = (): string => 'Hello world!';
 
 export default hello;

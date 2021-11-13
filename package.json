@@ -14,13 +14,13 @@
   },
   "homepage": "https://github.com/king-prawns/PiNE-Client#readme",
   "scripts": {
-    "clean": "rm -rf ./dist",
-    "build": "npm run clean && webpack build --config ./config/webpack/webpack.config.js",
+    "dev": "node ./config/webpack/dev",
+    "build": "node ./config/webpack/prod",
     "lint": "eslint --config ./config/eslint/.eslintrc ./src/**/*.ts",
     "prettier": "prettier --config ./config/prettier/.prettierrc --list-different src/**/*.ts --ignore-path ./config/prettier/.prettierignore",
     "typecheck": "tsc --project ./config/typescript/tsconfig.typecheck.json",
     "test": "jest --config=./config/jest/jest.config.js --silent",
-    "start": "npm run build && node dist/app.js"
+    "start": "http-server ./dist -p 8082 --silent"
   },
   "husky": {
     "hooks": {
@@ -35,19 +35,40 @@
   },
   "devDependencies": {
     "@types/jest": "27.0.2",
+    "@types/react": "17.0.34",
+    "@types/react-dom": "17.0.11",
     "@types/sinon": "10.0.6",
     "@typescript-eslint/eslint-plugin": "5.2.0",
     "@typescript-eslint/parser": "5.2.0",
+    "chalk": "4.1.2",
+    "clean-webpack-plugin": "4.0.0",
+    "css-loader": "6.5.1",
     "eslint": "8.1.0",
+    "fs-extra": "10.0.0",
+    "html-loader": "3.0.1",
+    "html-webpack-plugin": "5.5.0",
+    "http-server": "14.0.0",
     "husky": "4.3.8",
     "jest": "27.3.1",
     "lint-staged": "11.2.6",
+    "mini-css-extract-plugin": "2.4.4",
+    "opn": "6.0.0",
+    "optimize-css-assets-webpack-plugin": "6.0.1",
     "prettier": "2.4.1",
     "sinon": "11.1.2",
+    "style-loader": "3.3.1",
+    "terser-webpack-plugin": "5.2.5",
     "ts-jest": "27.0.7",
     "ts-loader": "9.2.6",
     "typescript": "4.4.4",
+    "url-loader": "4.1.1",
     "webpack": "5.61.0",
-    "webpack-cli": "4.9.1"
+    "webpack-cli": "4.9.1",
+    "webpack-dev-server": "4.4.0",
+    "webpack-merge": "5.8.0"
+  },
+  "dependencies": {
+    "react": "17.0.2",
+    "react-dom": "17.0.2"
   }
 }
