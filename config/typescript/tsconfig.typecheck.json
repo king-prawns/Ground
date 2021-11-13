@@ -1,0 +1,10 @@
+/**
+ * A TypeScript compiler configuration used only for type checking.
+ */
+
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true
+  }
+}

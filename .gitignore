@@ -1,0 +1,11 @@
+# npm
+node_modules
+
+# Build
+dist
+
+# Jest
+coverage
+
+# OS
+.DS_Store
