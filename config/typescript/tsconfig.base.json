@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "declaration": false,
+    "esModuleInterop": true,
+    "lib": ["es2015", "dom"],
+    "module": "commonjs",
+    "outDir": "../../dist",
+    "sourceMap": true,
+    "strict": true,
+    "target": "es2015"
+  },
+  "include": ["../../src/**/*"],
+  "exclude": ["../../src/**/*.test.ts"]
+}

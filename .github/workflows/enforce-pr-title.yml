@@ -1,0 +1,19 @@
+name: Enforce PR title
+
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - reopened
+      - synchronize
+
+jobs:
+  enforce-pr-title:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: seferov/pr-lint-action@master
+        with:
+          title-regex: "(\\[(NO VERSION|PATCH|MINOR|MAJOR)\\].+)"
+          error-message: "Format of the PR title - [NO VERSION|PATCH|MINOR|MAJOR] Description"
