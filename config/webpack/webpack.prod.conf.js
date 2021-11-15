@@ -49,10 +49,6 @@ module.exports = merge(base, {
               sourceMap: true,
               importLoaders: 2
             }
-          },
-          {
-            // resolves relative paths based on the original source file.
-            loader: 'resolve-url-loader'
           }
         ]
       }
