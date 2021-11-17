@@ -1,4 +1,5 @@
 const path = require('path');
+const Dotenv = require('dotenv-webpack');
 
 process.noDeprecation = true;
 
@@ -26,5 +27,6 @@ module.exports = {
         }
       }
     ]
-  }
+  },
+  plugins: [new Dotenv()]
 };
