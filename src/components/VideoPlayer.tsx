@@ -1,5 +1,6 @@
 import React from 'react';
 import shaka from 'shaka-player';
+import replaceManifestUrl from '../core/replaceManifestUrl';
 
 type IProps = Record<string, never>;
 type IState = Record<string, never>;
@@ -37,8 +38,9 @@ class VideoPlayer extends React.Component<IProps, IState> {
   }
 
   private async initPlayer(): Promise<void> {
-    const manifestUri =
-      'https://storage.googleapis.com/shaka-demo-assets/angel-one/dash.mpd';
+    const manifestUri = replaceManifestUrl(
+      'https://storage.googleapis.com/shaka-demo-assets/angel-one/dash.mpd'
+    );
 
     const video = this.videoComponent.current;
 
