@@ -1,17 +1,25 @@
+import 'shaka-player/dist/controls.css';
+import './VideoPlayer.css';
 import React from 'react';
-import shaka from 'shaka-player';
 import replaceManifestUrl from '../core/replaceManifestUrl';
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const shaka = require('shaka-player/dist/shaka-player.ui.js');
 
 type IProps = Record<string, never>;
 type IState = Record<string, never>;
 
 class VideoPlayer extends React.Component<IProps, IState> {
   private videoComponent: React.RefObject<HTMLVideoElement>;
+  private videoContainer: React.RefObject<HTMLDivElement>;
 
   constructor(props: IProps) {
     super(props);
     this.videoComponent = React.createRef();
+    this.videoContainer = React.createRef();
 
+    this.onPlayerErrorEvent = this.onPlayerErrorEvent.bind(this);
+    this.onUIErrorEvent = this.onUIErrorEvent.bind(this);
     this.onError = this.onError.bind(this);
   }
 
@@ -27,26 +35,39 @@ class VideoPlayer extends React.Component<IProps, IState> {
     }
   }
 
-  private onErrorEvent(event: any): void {
+  private onPlayerErrorEvent(event: any): void {
     this.onError(event.detail);
   }
 
-  private onError(event: any): void {
-    const {code, error} = event.detail;
+  private onUIErrorEvent(event: any): void {
+    this.onError(event.detail);
+  }
+
+  private onError(detail: any): void {
+    const {code, error} = detail;
     // eslint-disable-next-line no-console
     console.error('Error code', code, 'object', error);
   }
 
   private async initPlayer(): Promise<void> {
     const manifestUri = replaceManifestUrl(
-      'https://storage.googleapis.com/shaka-demo-assets/angel-one/dash.mpd'
+      'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel-multi-lang.ism/.mpd'
     );
 
-    const video = this.videoComponent.current;
+    const videoElement = this.videoComponent.current;
+    const videoContainerElement = this.videoContainer.current;
 
-    const player = new shaka.Player(video);
+    const player = new shaka.Player(videoElement);
+    const ui = new shaka.ui.Overlay(
+      player,
+      videoContainerElement,
+      videoElement
+    );
 
-    player.addEventListener('error', this.onErrorEvent);
+    const controls = ui.getControls();
+
+    player.addEventListener('error', this.onPlayerErrorEvent);
+    controls.addEventListener('error', this.onUIErrorEvent);
 
     try {
       await player.load(manifestUri);
@@ -58,7 +79,11 @@ class VideoPlayer extends React.Component<IProps, IState> {
   }
 
   render(): JSX.Element {
-    return <video width="640" ref={this.videoComponent} controls />;
+    return (
+      <div className="video-container" ref={this.videoContainer}>
+        <video ref={this.videoComponent} />
+      </div>
+    );
   }
 }
 
