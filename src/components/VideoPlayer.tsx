@@ -6,8 +6,13 @@ import replaceManifestUrl from '../core/replaceManifestUrl';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const shaka = require('shaka-player/dist/shaka-player.ui.js');
 
-type IProps = Record<string, never>;
+type IProps = {
+  isProxyEnabled: boolean;
+};
 type IState = Record<string, never>;
+
+const MANIFEST =
+  'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel-multi-lang.ism/.mpd';
 
 class VideoPlayer extends React.Component<IProps, IState> {
   private videoComponent: React.RefObject<HTMLVideoElement>;
@@ -50,9 +55,9 @@ class VideoPlayer extends React.Component<IProps, IState> {
   }
 
   private async initPlayer(): Promise<void> {
-    const manifestUri = replaceManifestUrl(
-      'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel-multi-lang.ism/.mpd'
-    );
+    const manifestUri = this.props.isProxyEnabled
+      ? replaceManifestUrl(MANIFEST)
+      : MANIFEST;
 
     const videoElement = this.videoComponent.current;
     const videoContainerElement = this.videoContainer.current;
