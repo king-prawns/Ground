@@ -4,9 +4,6 @@ node_modules
 # Build
 dist
 
-# Jest
-coverage
-
 # env
 .env
 
