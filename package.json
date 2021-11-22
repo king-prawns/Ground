@@ -19,7 +19,6 @@
     "lint": "eslint --config ./config/eslint/.eslintrc ./src/**/*.ts{,x}",
     "prettier": "prettier --config ./config/prettier/.prettierrc --list-different src/**/*.ts --ignore-path ./config/prettier/.prettierignore",
     "typecheck": "tsc --project ./config/typescript/tsconfig.typecheck.json",
-    "test": "jest --config=./config/jest/jest.config.js --silent",
     "start": "http-server ./dist -p 8082 --silent"
   },
   "husky": {
@@ -34,7 +33,6 @@
     ]
   },
   "devDependencies": {
-    "@types/jest": "27.0.2",
     "@types/react": "17.0.34",
     "@types/react-dom": "17.0.11",
     "@types/sinon": "10.0.6",
@@ -50,7 +48,6 @@
     "html-webpack-plugin": "5.5.0",
     "http-server": "14.0.0",
     "husky": "4.3.8",
-    "jest": "27.3.1",
     "lint-staged": "11.2.6",
     "mini-css-extract-plugin": "2.4.4",
     "opn": "6.0.0",

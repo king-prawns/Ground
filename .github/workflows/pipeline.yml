@@ -23,5 +23,3 @@ jobs:
         run: npm run prettier
       - name: 🔬 Type checking
         run: npm run typecheck
-      - name: 🧪 Test
-        run: npm run test
