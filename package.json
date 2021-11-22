@@ -16,7 +16,7 @@
   "scripts": {
     "dev": "node ./config/webpack/dev",
     "build": "node ./config/webpack/prod",
-    "lint": "eslint --config ./config/eslint/.eslintrc ./src/**/*.ts",
+    "lint": "eslint --config ./config/eslint/.eslintrc ./src/**/*.ts{,x}",
     "prettier": "prettier --config ./config/prettier/.prettierrc --list-different src/**/*.ts --ignore-path ./config/prettier/.prettierignore",
     "typecheck": "tsc --project ./config/typescript/tsconfig.typecheck.json",
     "test": "jest --config=./config/jest/jest.config.js --silent",
@@ -28,7 +28,7 @@
     }
   },
   "lint-staged": {
-    "*.ts": [
+    "*.ts{,x}": [
       "prettier --write --config ./config/prettier/.prettierrc",
       "eslint --config ./config/eslint/.eslintrc --no-error-on-unmatched-pattern --fix"
     ]
@@ -44,7 +44,7 @@
     "clean-webpack-plugin": "4.0.0",
     "css-loader": "6.5.1",
     "dotenv-webpack": "7.0.3",
-    "eslint": "8.1.0",
+    "eslint": "8.3.0",
     "fs-extra": "10.0.0",
     "html-loader": "3.0.1",
     "html-webpack-plugin": "5.5.0",
