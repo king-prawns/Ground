@@ -1,7 +1,7 @@
 import 'shaka-player/dist/controls.css';
 import './VideoPlayer.css';
 import React from 'react';
-import replaceManifestUrl from '../core/replaceManifestUrl';
+import {replaceManifestUrl} from '@king-prawns/pine-roots';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const shaka = require('shaka-player/dist/shaka-player.ui.js');
