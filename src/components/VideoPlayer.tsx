@@ -1,7 +1,7 @@
 import 'shaka-player/dist/controls.css';
 import './VideoPlayer.css';
 import React from 'react';
-import {replaceManifestUrl} from '@king-prawns/pine-roots';
+import {proxyfy} from '@king-prawns/pine-roots';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const shaka = require('shaka-player/dist/shaka-player.ui.js');
@@ -56,7 +56,7 @@ class VideoPlayer extends React.Component<IProps, IState> {
 
   private async initPlayer(): Promise<void> {
     const manifestUri = this.props.isProxyEnabled
-      ? replaceManifestUrl(MANIFEST)
+      ? proxyfy(MANIFEST)
       : MANIFEST;
 
     const videoElement = this.videoComponent.current;
