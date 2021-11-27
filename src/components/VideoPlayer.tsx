@@ -2,6 +2,7 @@ import 'shaka-player/dist/controls.css';
 import './VideoPlayer.css';
 import React from 'react';
 import {proxyfy} from '@king-prawns/pine-roots';
+import connectDriver from '../core/connectDriver';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const shaka = require('shaka-player/dist/shaka-player.ui.js');
@@ -55,10 +56,6 @@ class VideoPlayer extends React.Component<IProps, IState> {
   }
 
   private async initPlayer(): Promise<void> {
-    const manifestUri = this.props.isProxyEnabled
-      ? proxyfy(MANIFEST)
-      : MANIFEST;
-
     const videoElement = this.videoComponent.current;
     const videoContainerElement = this.videoContainer.current;
 
@@ -75,6 +72,14 @@ class VideoPlayer extends React.Component<IProps, IState> {
     controls.addEventListener('error', this.onUIErrorEvent);
 
     try {
+      const {proxyManifestUrl, driver} = proxyfy(MANIFEST);
+
+      connectDriver(player, driver);
+
+      const manifestUri = this.props.isProxyEnabled
+        ? proxyManifestUrl
+        : MANIFEST;
+
       await player.load(manifestUri);
       // eslint-disable-next-line no-console
       console.log('The video has now been loaded!');
