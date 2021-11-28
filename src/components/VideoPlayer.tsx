@@ -74,7 +74,7 @@ class VideoPlayer extends React.Component<IProps, IState> {
     try {
       const {proxyManifestUrl, driver} = proxyfy(MANIFEST);
 
-      connectDriver(player, driver);
+      connectDriver(player, videoElement!, driver);
 
       const manifestUri = this.props.isProxyEnabled
         ? proxyManifestUrl
