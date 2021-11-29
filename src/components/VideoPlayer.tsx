@@ -1,7 +1,7 @@
 import 'shaka-player/dist/controls.css';
 import './VideoPlayer.css';
 import React from 'react';
-import {proxyfy} from '@king-prawns/pine-roots';
+import {pinefy} from '@king-prawns/pine-roots';
 import connectDriver from '../core/connectDriver';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -72,7 +72,7 @@ class VideoPlayer extends React.Component<IProps, IState> {
     controls.addEventListener('error', this.onUIErrorEvent);
 
     try {
-      const {proxyManifestUrl, driver} = proxyfy(MANIFEST);
+      const {proxyManifestUrl, driver} = pinefy(MANIFEST);
 
       connectDriver(player, videoElement!, driver);
 
