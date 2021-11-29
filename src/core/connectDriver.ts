@@ -46,17 +46,15 @@ const connectDriver = (
         return;
       } else {
         isBuffering = true;
-        driver.onBufferingStarted();
+        driver.onBuffering();
       }
     } else {
       if (isSeeking) {
         isSeeking = false;
-        driver.onSeekEnded();
         driver.onPlaying();
       } else {
         if (isBuffering) {
           isBuffering = false;
-          driver.onBufferingEnded();
           driver.onPlaying();
         }
       }
@@ -76,18 +74,16 @@ const connectDriver = (
   videoElement.addEventListener('ended', () => {
     driver.onEnded();
   });
-  videoElement.addEventListener('timeupdate', () => {
-    const currentTimeMs = Math.trunc(videoElement.currentTime * 1000);
-    driver.onTimeUpdate(currentTimeMs);
-  });
   videoElement.addEventListener('seeking', () => {
     isSeeking = true;
-    driver.onSeekStarted();
+    driver.onSeeking();
   });
 
   // TODO:
   // from shaka with polling?
   // buffer audio video
+  // player.getStats();
+  // player.getBufferedInfo();
   // active variant
   // estimated bandwidth
   // memory heap?
