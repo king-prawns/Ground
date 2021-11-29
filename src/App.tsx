@@ -5,7 +5,7 @@ class App extends React.Component {
   render(): JSX.Element {
     return (
       <>
-        <VideoPlayer isProxyEnabled={false} />
+        <VideoPlayer isProxyEnabled={true} />
       </>
     );
   }
