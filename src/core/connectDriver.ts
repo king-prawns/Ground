@@ -11,6 +11,7 @@ const connectDriver = (
   let isLoading = false;
   let isSeeking = false;
   let isBuffering = false;
+  let isPaused = false;
 
   player
     .getNetworkingEngine()
@@ -51,7 +52,11 @@ const connectDriver = (
     } else {
       if (isSeeking) {
         isSeeking = false;
-        driver.onPlaying();
+        if (isPaused) {
+          driver.onPaused();
+        } else {
+          driver.onPlaying();
+        }
       } else {
         if (isBuffering) {
           isBuffering = false;
@@ -62,6 +67,7 @@ const connectDriver = (
   });
   videoElement.addEventListener('playing', () => {
     isLoading = false;
+    isPaused = false;
     if (isBuffering || isSeeking) {
       return;
     } else {
@@ -69,6 +75,7 @@ const connectDriver = (
     }
   });
   videoElement.addEventListener('pause', () => {
+    isPaused = true;
     driver.onPaused();
   });
   videoElement.addEventListener('ended', () => {
@@ -79,14 +86,35 @@ const connectDriver = (
     driver.onSeeking();
   });
 
+  setInterval(() => {
+    const stats = player.getStats();
+    const {streamBandwidth, estimatedBandwidth} = stats;
+
+    if (streamBandwidth) {
+      driver.onVariantUpdate(streamBandwidth / 1000000);
+    }
+
+    if (estimatedBandwidth) {
+      driver.onEstimatedBandwidthUpdate(estimatedBandwidth / 1000000);
+    }
+
+    const bufferedInfo = player.getBufferedInfo();
+
+    if (bufferedInfo.audio[0] && bufferedInfo.video[0]) {
+      driver.onBufferedInfoUpdate({
+        audio: bufferedInfo.audio[0].end - bufferedInfo.audio[0].start,
+        video: bufferedInfo.video[0].end - bufferedInfo.video[0].start
+      });
+    }
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    const usedJSHeapSize = window.performance.memory.usedJSHeapSize;
+    driver.onUsedJSHeapSizeUpdate(usedJSHeapSize / 1000000);
+  }, 500);
+
   // TODO:
-  // from shaka with polling?
-  // buffer audio video
-  // player.getStats();
-  // player.getBufferedInfo();
-  // active variant
-  // estimated bandwidth
-  // memory heap?
+  // after seeking return latest state
   // install 1.1.1
 };
 
