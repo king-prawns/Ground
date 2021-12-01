@@ -71,11 +71,10 @@ const connectDriver = (
     stateMachine.transition(PlayerState.LOADING);
   });
   player.addEventListener('buffering', (event: any) => {
-    const {buffering} = event;
-    if (buffering) {
+    if (event.buffering) {
       stateMachine.transition(PlayerState.BUFFERING);
     } else {
-      stateMachine.transition(stateMachine.prevState);
+      stateMachine.transition(stateMachine.previousState);
     }
   });
   videoElement.addEventListener('playing', () => {

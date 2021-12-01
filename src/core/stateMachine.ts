@@ -2,57 +2,54 @@ import {Driver, PlayerState} from '@king-prawns/pine-roots';
 
 class StateMachine {
   private _currentState: PlayerState = PlayerState.UNKNOWN;
-  private _prevState: PlayerState = PlayerState.UNKNOWN;
+  private _previousState: PlayerState = PlayerState.UNKNOWN;
 
   constructor(private driver: Driver) {}
 
   public transition(state: PlayerState): void {
-    // TODO: simplify && add more condition on transitions
     switch (state) {
       case PlayerState.LOADING:
         if (this.currentState === PlayerState.UNKNOWN) {
-          this.currentState = state;
-          this.driver.onPlayerStateUpdate(PlayerState.UNKNOWN);
+          this.onPlayerStateUpdate(state);
         }
         break;
       case PlayerState.BUFFERING:
         if (
-          this.currentState === PlayerState.LOADING ||
-          this.currentState === PlayerState.SEEKING
+          this.currentState === PlayerState.PLAYING ||
+          this.currentState === PlayerState.LOADING
         ) {
-          return;
+          this.onPlayerStateUpdate(state);
         }
-        this.driver.onPlayerStateUpdate(PlayerState.BUFFERING);
         break;
       case PlayerState.PAUSED:
-        this.currentState = state;
-        this.driver.onPlayerStateUpdate(PlayerState.PAUSED);
+        if (this.currentState === PlayerState.PLAYING) {
+          this.onPlayerStateUpdate(state);
+        }
         break;
       case PlayerState.PLAYING:
         if (
+          this.currentState === PlayerState.PAUSED ||
           this.currentState === PlayerState.BUFFERING ||
           this.currentState === PlayerState.SEEKING
         ) {
-          return;
+          this.onPlayerStateUpdate(state);
         }
-        this.currentState = state;
-        this.driver.onPlayerStateUpdate(PlayerState.PLAYING);
         break;
       case PlayerState.ENDED:
-        this.currentState = state;
-        this.driver.onPlayerStateUpdate(PlayerState.ENDED);
+        if (this.currentState === PlayerState.PLAYING) {
+          this.onPlayerStateUpdate(state);
+        }
         break;
       case PlayerState.SEEKING:
-        this.currentState = state;
-        this.driver.onPlayerStateUpdate(PlayerState.SEEKING);
+        if (
+          this.currentState === PlayerState.PAUSED ||
+          this.currentState === PlayerState.BUFFERING ||
+          this.currentState === PlayerState.PLAYING ||
+          this.currentState === PlayerState.ENDED
+        ) {
+          this.onPlayerStateUpdate(state);
+        }
         break;
-    }
-  }
-
-  set currentState(state: PlayerState) {
-    if (this._currentState !== state) {
-      this._prevState = this._currentState;
-      this._currentState = state;
     }
   }
 
@@ -60,8 +57,20 @@ class StateMachine {
     return this._currentState;
   }
 
-  get prevState(): PlayerState {
-    return this._prevState;
+  set currentState(state: PlayerState) {
+    if (this._currentState !== state) {
+      this._previousState = this._currentState;
+      this._currentState = state;
+    }
+  }
+
+  get previousState(): PlayerState {
+    return this._previousState;
+  }
+
+  private onPlayerStateUpdate(state: PlayerState): void {
+    this.currentState = state;
+    this.driver.onPlayerStateUpdate(state);
   }
 }
 
