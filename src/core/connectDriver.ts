@@ -1,4 +1,5 @@
-import {Driver} from '@king-prawns/pine-roots';
+import {Driver, PlayerState} from '@king-prawns/pine-roots';
+import StateMachine from './stateMachine';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const shaka = require('shaka-player/dist/shaka-player.ui.js');
@@ -8,10 +9,39 @@ const connectDriver = (
   videoElement: HTMLVideoElement,
   driver: Driver
 ): void => {
-  let isLoading = false;
-  let isSeeking = false;
-  let isBuffering = false;
-  let isPaused = false;
+  let polling: number;
+
+  const getPlayerStats = (): void => {
+    const stats = player.getStats();
+    const {streamBandwidth, estimatedBandwidth} = stats;
+
+    if (streamBandwidth) {
+      driver.onVariantUpdate(streamBandwidth / 1000000);
+    }
+
+    if (estimatedBandwidth) {
+      driver.onEstimatedBandwidthUpdate(estimatedBandwidth / 1000000);
+    }
+
+    const bufferedInfo = player.getBufferedInfo();
+
+    if (bufferedInfo.audio[0] && bufferedInfo.video[0]) {
+      driver.onBufferInfoUpdate({
+        audio: bufferedInfo.audio[0].end - bufferedInfo.audio[0].start,
+        video: bufferedInfo.video[0].end - bufferedInfo.video[0].start
+      });
+    }
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    const usedJSHeapSize = window.performance.memory.usedJSHeapSize;
+    driver.onUsedJSHeapSizeUpdate(usedJSHeapSize / 1000000);
+  };
+
+  driver.onPlayerMetadataUpdate({
+    name: 'Shaka Player',
+    version: '3.2.1'
+  });
 
   player
     .getNetworkingEngine()
@@ -32,90 +62,41 @@ const connectDriver = (
         byteLength: response.data.byteLength
       });
     });
+  // eslint-disable-next-line prefer-const
+  polling = window.setInterval(getPlayerStats, 500);
+
+  const stateMachine = new StateMachine(driver);
+
   player.addEventListener('loading', () => {
-    isLoading = true;
-    driver.onLoading();
+    stateMachine.transition(PlayerState.LOADING);
   });
   player.addEventListener('buffering', (event: any) => {
-    if (isLoading) {
-      return;
-    }
-
     const {buffering} = event;
     if (buffering) {
-      if (isSeeking) {
-        return;
-      } else {
-        isBuffering = true;
-        driver.onBuffering();
-      }
+      stateMachine.transition(PlayerState.BUFFERING);
     } else {
-      if (isSeeking) {
-        isSeeking = false;
-        if (isPaused) {
-          driver.onPaused();
-        } else {
-          driver.onPlaying();
-        }
-      } else {
-        if (isBuffering) {
-          isBuffering = false;
-          driver.onPlaying();
-        }
-      }
+      stateMachine.transition(stateMachine.prevState);
     }
   });
   videoElement.addEventListener('playing', () => {
-    isLoading = false;
-    isPaused = false;
-    if (isBuffering || isSeeking) {
-      return;
-    } else {
-      driver.onPlaying();
-    }
+    stateMachine.transition(PlayerState.PLAYING);
   });
   videoElement.addEventListener('pause', () => {
-    isPaused = true;
-    driver.onPaused();
+    stateMachine.transition(PlayerState.PAUSED);
   });
   videoElement.addEventListener('ended', () => {
-    driver.onEnded();
+    clearInterval(polling);
+    stateMachine.transition(PlayerState.ENDED);
   });
   videoElement.addEventListener('seeking', () => {
-    isSeeking = true;
-    driver.onSeeking();
+    if (stateMachine.currentState === PlayerState.ENDED) {
+      polling = window.setInterval(getPlayerStats, 500);
+    }
+    stateMachine.transition(PlayerState.SEEKING);
   });
-
-  setInterval(() => {
-    const stats = player.getStats();
-    const {streamBandwidth, estimatedBandwidth} = stats;
-
-    if (streamBandwidth) {
-      driver.onVariantUpdate(streamBandwidth / 1000000);
-    }
-
-    if (estimatedBandwidth) {
-      driver.onEstimatedBandwidthUpdate(estimatedBandwidth / 1000000);
-    }
-
-    const bufferedInfo = player.getBufferedInfo();
-
-    if (bufferedInfo.audio[0] && bufferedInfo.video[0]) {
-      driver.onBufferedInfoUpdate({
-        audio: bufferedInfo.audio[0].end - bufferedInfo.audio[0].start,
-        video: bufferedInfo.video[0].end - bufferedInfo.video[0].start
-      });
-    }
-
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-ignore
-    const usedJSHeapSize = window.performance.memory.usedJSHeapSize;
-    driver.onUsedJSHeapSizeUpdate(usedJSHeapSize / 1000000);
-  }, 500);
-
-  // TODO:
-  // after seeking return latest state
-  // install 1.1.1
+  videoElement.addEventListener('play', () => {
+    stateMachine.transition(PlayerState.PLAYING);
+  });
 };
 
 export default connectDriver;
