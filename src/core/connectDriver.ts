@@ -77,7 +77,16 @@ const connectDriver = (
       stateMachine.transition(stateMachine.previousState);
     }
   });
+  videoElement.addEventListener('seeking', () => {
+    if (stateMachine.currentState === PlayerState.ENDED) {
+      polling = window.setInterval(getPlayerStats, 500);
+    }
+    stateMachine.transition(PlayerState.SEEKING);
+  });
   videoElement.addEventListener('playing', () => {
+    stateMachine.transition(PlayerState.PLAYING);
+  });
+  videoElement.addEventListener('play', () => {
     stateMachine.transition(PlayerState.PLAYING);
   });
   videoElement.addEventListener('pause', () => {
@@ -87,14 +96,8 @@ const connectDriver = (
     clearInterval(polling);
     stateMachine.transition(PlayerState.ENDED);
   });
-  videoElement.addEventListener('seeking', () => {
-    if (stateMachine.currentState === PlayerState.ENDED) {
-      polling = window.setInterval(getPlayerStats, 500);
-    }
-    stateMachine.transition(PlayerState.SEEKING);
-  });
-  videoElement.addEventListener('play', () => {
-    stateMachine.transition(PlayerState.PLAYING);
+  player.addEventListener('error', () => {
+    stateMachine.transition(PlayerState.ERRORED);
   });
 };
 

@@ -21,8 +21,13 @@ class StateMachine {
           this.onPlayerStateUpdate(state);
         }
         break;
-      case PlayerState.PAUSED:
-        if (this.currentState === PlayerState.PLAYING) {
+      case PlayerState.SEEKING:
+        if (
+          this.currentState === PlayerState.PAUSED ||
+          this.currentState === PlayerState.BUFFERING ||
+          this.currentState === PlayerState.PLAYING ||
+          this.currentState === PlayerState.ENDED
+        ) {
           this.onPlayerStateUpdate(state);
         }
         break;
@@ -35,20 +40,18 @@ class StateMachine {
           this.onPlayerStateUpdate(state);
         }
         break;
+      case PlayerState.PAUSED:
+        if (this.currentState === PlayerState.PLAYING) {
+          this.onPlayerStateUpdate(state);
+        }
+        break;
       case PlayerState.ENDED:
         if (this.currentState === PlayerState.PLAYING) {
           this.onPlayerStateUpdate(state);
         }
         break;
-      case PlayerState.SEEKING:
-        if (
-          this.currentState === PlayerState.PAUSED ||
-          this.currentState === PlayerState.BUFFERING ||
-          this.currentState === PlayerState.PLAYING ||
-          this.currentState === PlayerState.ENDED
-        ) {
-          this.onPlayerStateUpdate(state);
-        }
+      case PlayerState.ERRORED:
+        this.onPlayerStateUpdate(state);
         break;
     }
   }
