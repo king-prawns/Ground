@@ -2,51 +2,48 @@ import {Driver, PlayerState} from '@king-prawns/pine-roots';
 
 class StateMachine {
   private _currentState: PlayerState = PlayerState.UNKNOWN;
-  private _previousState: PlayerState = PlayerState.UNKNOWN;
+  private _isBuffering = false;
 
-  constructor(private driver: Driver) {}
+  constructor(private driver: Driver, private videoElement: HTMLVideoElement) {}
+
+  private onPlayerStateUpdate(state: PlayerState): void {
+    if (this._currentState !== state) {
+      this._currentState = state;
+      this.driver.onPlayerStateUpdate(state);
+    }
+  }
 
   public transition(state: PlayerState): void {
     switch (state) {
       case PlayerState.LOADING:
-        if (this.currentState === PlayerState.UNKNOWN) {
-          this.onPlayerStateUpdate(state);
+        if (this._currentState === PlayerState.UNKNOWN) {
+          this.onPlayerStateUpdate(PlayerState.LOADING);
         }
         break;
       case PlayerState.BUFFERING:
         if (
-          this.currentState === PlayerState.PLAYING ||
-          this.currentState === PlayerState.LOADING
+          this._currentState === PlayerState.PLAYING ||
+          this._currentState === PlayerState.LOADING ||
+          this._currentState === PlayerState.PAUSED
         ) {
-          this.onPlayerStateUpdate(state);
-        }
-        break;
-      case PlayerState.SEEKING:
-        if (
-          this.currentState === PlayerState.PAUSED ||
-          this.currentState === PlayerState.BUFFERING ||
-          this.currentState === PlayerState.PLAYING ||
-          this.currentState === PlayerState.ENDED
-        ) {
-          this.onPlayerStateUpdate(state);
+          this._isBuffering = true;
+          this.onPlayerStateUpdate(PlayerState.BUFFERING);
         }
         break;
       case PlayerState.PLAYING:
-        if (
-          this.currentState === PlayerState.PAUSED ||
-          this.currentState === PlayerState.BUFFERING ||
-          this.currentState === PlayerState.SEEKING
-        ) {
+        if (this._currentState === PlayerState.PAUSED || !this._isBuffering) {
           this.onPlayerStateUpdate(state);
         }
         break;
       case PlayerState.PAUSED:
-        if (this.currentState === PlayerState.PLAYING) {
+        if (this._currentState === PlayerState.PLAYING || !this._isBuffering) {
+          console.log('>READY STATE', this.videoElement.readyState);
+          // TODO: fix pause before seeking
           this.onPlayerStateUpdate(state);
         }
         break;
       case PlayerState.ENDED:
-        if (this.currentState === PlayerState.PLAYING) {
+        if (this._currentState === PlayerState.PLAYING) {
           this.onPlayerStateUpdate(state);
         }
         break;
@@ -56,24 +53,13 @@ class StateMachine {
     }
   }
 
-  get currentState(): PlayerState {
-    return this._currentState;
-  }
-
-  set currentState(state: PlayerState) {
-    if (this._currentState !== state) {
-      this._previousState = this._currentState;
-      this._currentState = state;
+  public endBuffering(): void {
+    this._isBuffering = false;
+    if (this.videoElement.paused) {
+      this.transition(PlayerState.PAUSED);
+    } else {
+      this.transition(PlayerState.PLAYING);
     }
-  }
-
-  get previousState(): PlayerState {
-    return this._previousState;
-  }
-
-  private onPlayerStateUpdate(state: PlayerState): void {
-    this.currentState = state;
-    this.driver.onPlayerStateUpdate(state);
   }
 }
 

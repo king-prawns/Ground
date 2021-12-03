@@ -63,41 +63,50 @@ const connectDriver = (
       });
     });
   // eslint-disable-next-line prefer-const
-  polling = window.setInterval(getPlayerStats, 500);
+  polling = window.setInterval(getPlayerStats, 1000);
 
-  const stateMachine = new StateMachine(driver);
+  const stateMachine = new StateMachine(driver, videoElement);
 
   player.addEventListener('loading', () => {
+    console.log('loading');
     stateMachine.transition(PlayerState.LOADING);
   });
   player.addEventListener('buffering', (event: any) => {
+    console.log('buffering', event.buffering);
     if (event.buffering) {
       stateMachine.transition(PlayerState.BUFFERING);
     } else {
-      stateMachine.transition(stateMachine.previousState);
+      stateMachine.endBuffering();
     }
   });
   videoElement.addEventListener('seeking', () => {
-    if (stateMachine.currentState === PlayerState.ENDED) {
+    console.log('seeking');
+    if (!polling) {
       polling = window.setInterval(getPlayerStats, 500);
     }
-    stateMachine.transition(PlayerState.SEEKING);
   });
   videoElement.addEventListener('playing', () => {
+    console.log('playing');
     stateMachine.transition(PlayerState.PLAYING);
   });
   videoElement.addEventListener('play', () => {
+    console.log('play');
     stateMachine.transition(PlayerState.PLAYING);
   });
   videoElement.addEventListener('pause', () => {
+    console.log('paused');
     stateMachine.transition(PlayerState.PAUSED);
   });
   videoElement.addEventListener('ended', () => {
+    console.log('ended');
     clearInterval(polling);
+    polling = 0;
     stateMachine.transition(PlayerState.ENDED);
   });
-  player.addEventListener('error', () => {
+  player.addEventListener('error', (e: any) => {
+    console.log('error', e);
     stateMachine.transition(PlayerState.ERRORED);
+    // TODO: stop/exit player!
   });
 };
 
