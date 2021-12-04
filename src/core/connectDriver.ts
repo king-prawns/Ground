@@ -80,7 +80,8 @@ const connectDriver = (
   });
   player.addEventListener('error', () => {
     stateMachine.transition(PlayerState.ERRORED);
-    // TODO: stop/exit player!
+    clearInterval(polling);
+    player.destroy();
   });
   videoElement.addEventListener('seeking', () => {
     if (!polling) {
