@@ -1,7 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
 const WebpackDevServer = require('webpack-dev-server');
-const opn = require('opn');
 const chalk = require('chalk');
 const config = require('./webpack.dev.conf');
 
@@ -31,5 +30,4 @@ server.listen(DEFAULT_PORT, DEFAULT_HOST, err => {
       'WebpackDevServer listening at localhost:'
     )} ${chalk.underline.green(DEFAULT_PORT)}`
   );
-  opn(`http://${DEFAULT_HOST}:${DEFAULT_PORT}`);
 });

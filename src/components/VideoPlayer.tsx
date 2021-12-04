@@ -1,7 +1,8 @@
 import 'shaka-player/dist/controls.css';
 import './VideoPlayer.css';
 import React from 'react';
-import {proxyfy} from '@king-prawns/pine-roots';
+import {pinefy, PlayerState} from '@king-prawns/pine-roots';
+import connectDriver from '../core/connectDriver';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const shaka = require('shaka-player/dist/shaka-player.ui.js');
@@ -22,10 +23,6 @@ class VideoPlayer extends React.Component<IProps, IState> {
     super(props);
     this.videoComponent = React.createRef();
     this.videoContainer = React.createRef();
-
-    this.onPlayerErrorEvent = this.onPlayerErrorEvent.bind(this);
-    this.onUIErrorEvent = this.onUIErrorEvent.bind(this);
-    this.onError = this.onError.bind(this);
   }
 
   componentDidMount(): void {
@@ -40,25 +37,7 @@ class VideoPlayer extends React.Component<IProps, IState> {
     }
   }
 
-  private onPlayerErrorEvent(event: any): void {
-    this.onError(event.detail);
-  }
-
-  private onUIErrorEvent(event: any): void {
-    this.onError(event.detail);
-  }
-
-  private onError(detail: any): void {
-    const {code, error} = detail;
-    // eslint-disable-next-line no-console
-    console.error('Error code', code, 'object', error);
-  }
-
   private async initPlayer(): Promise<void> {
-    const manifestUri = this.props.isProxyEnabled
-      ? proxyfy(MANIFEST)
-      : MANIFEST;
-
     const videoElement = this.videoComponent.current;
     const videoContainerElement = this.videoContainer.current;
 
@@ -71,15 +50,20 @@ class VideoPlayer extends React.Component<IProps, IState> {
 
     const controls = ui.getControls();
 
-    player.addEventListener('error', this.onPlayerErrorEvent);
-    controls.addEventListener('error', this.onUIErrorEvent);
+    const {proxyManifestUrl, driver} = pinefy(MANIFEST);
+    connectDriver(player, controls, videoElement!, driver);
+
+    const manifestUri = this.props.isProxyEnabled ? proxyManifestUrl : MANIFEST;
 
     try {
       await player.load(manifestUri);
       // eslint-disable-next-line no-console
       console.log('The video has now been loaded!');
-    } catch (e) {
-      this.onError(e);
+    } catch (e: any) {
+      const {code, error} = e;
+      // eslint-disable-next-line no-console
+      console.error('Error code', code, 'object', error);
+      driver.onPlayerStateUpdate(PlayerState.ERRORED);
     }
   }
 
