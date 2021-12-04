@@ -13,6 +13,10 @@ const connectDriver = (
   let polling: number;
 
   const getPlayerStats = (): void => {
+    if (!player) {
+      window.clearInterval(polling);
+    }
+
     const stats = player.getStats();
     const {streamBandwidth, estimatedBandwidth} = stats;
 
@@ -78,9 +82,12 @@ const connectDriver = (
       stateMachine.endBuffering();
     }
   });
-  player.addEventListener('error', () => {
+  player.addEventListener('error', (e: any) => {
+    const {code, data} = e.detail;
+    // eslint-disable-next-line no-console
+    console.error('Error code', code, 'message', data[1]?.message);
     stateMachine.transition(PlayerState.ERRORED);
-    clearInterval(polling);
+    window.clearInterval(polling);
     player.destroy();
   });
   videoElement.addEventListener('seeking', () => {
@@ -98,7 +105,7 @@ const connectDriver = (
     stateMachine.transition(PlayerState.PAUSED);
   });
   videoElement.addEventListener('ended', () => {
-    clearInterval(polling);
+    window.clearInterval(polling);
     polling = 0;
     stateMachine.transition(PlayerState.ENDED);
   });

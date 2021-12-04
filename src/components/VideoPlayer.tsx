@@ -60,10 +60,11 @@ class VideoPlayer extends React.Component<IProps, IState> {
       // eslint-disable-next-line no-console
       console.log('The video has now been loaded!');
     } catch (e: any) {
-      const {code, error} = e;
+      const {code, data} = e;
       // eslint-disable-next-line no-console
-      console.error('Error code', code, 'object', error);
+      console.error('Error code', code, 'message', data[1]?.message);
       driver.onPlayerStateUpdate(PlayerState.ERRORED);
+      player.destroy();
     }
   }
 
