@@ -48,10 +48,10 @@ class VideoPlayer extends React.Component<IProps, IState> {
       videoElement
     );
 
-    ui.getControls();
+    const controls = ui.getControls();
 
     const {proxyManifestUrl, driver} = pinefy(MANIFEST);
-    connectDriver(player, videoElement!, driver);
+    connectDriver(player, controls, videoElement!, driver);
 
     const manifestUri = this.props.isProxyEnabled ? proxyManifestUrl : MANIFEST;
 

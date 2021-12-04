@@ -24,7 +24,8 @@ class StateMachine {
         if (
           this._currentState === PlayerState.PLAYING ||
           this._currentState === PlayerState.LOADING ||
-          this._currentState === PlayerState.PAUSED
+          this._currentState === PlayerState.PAUSED ||
+          this._currentState === PlayerState.ENDED
         ) {
           this._isBuffering = true;
           this.onPlayerStateUpdate(PlayerState.BUFFERING);
@@ -37,8 +38,6 @@ class StateMachine {
         break;
       case PlayerState.PAUSED:
         if (this._currentState === PlayerState.PLAYING || !this._isBuffering) {
-          console.log('>READY STATE', this.videoElement.readyState);
-          // TODO: fix pause before seeking
           this.onPlayerStateUpdate(state);
         }
         break;
@@ -56,9 +55,9 @@ class StateMachine {
   public endBuffering(): void {
     this._isBuffering = false;
     if (this.videoElement.paused) {
-      this.transition(PlayerState.PAUSED);
+      this.onPlayerStateUpdate(PlayerState.PAUSED);
     } else {
-      this.transition(PlayerState.PLAYING);
+      this.onPlayerStateUpdate(PlayerState.PLAYING);
     }
   }
 }

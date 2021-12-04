@@ -6,6 +6,7 @@ const shaka = require('shaka-player/dist/shaka-player.ui.js');
 
 const connectDriver = (
   player: any,
+  controls: any,
   videoElement: HTMLVideoElement,
   driver: Driver
 ): void => {
@@ -68,45 +69,37 @@ const connectDriver = (
   const stateMachine = new StateMachine(driver, videoElement);
 
   player.addEventListener('loading', () => {
-    console.log('loading');
     stateMachine.transition(PlayerState.LOADING);
   });
   player.addEventListener('buffering', (event: any) => {
-    console.log('buffering', event.buffering);
     if (event.buffering) {
       stateMachine.transition(PlayerState.BUFFERING);
     } else {
       stateMachine.endBuffering();
     }
   });
+  player.addEventListener('error', () => {
+    stateMachine.transition(PlayerState.ERRORED);
+    // TODO: stop/exit player!
+  });
   videoElement.addEventListener('seeking', () => {
-    console.log('seeking');
     if (!polling) {
       polling = window.setInterval(getPlayerStats, 500);
     }
   });
   videoElement.addEventListener('playing', () => {
-    console.log('playing');
-    stateMachine.transition(PlayerState.PLAYING);
-  });
-  videoElement.addEventListener('play', () => {
-    console.log('play');
     stateMachine.transition(PlayerState.PLAYING);
   });
   videoElement.addEventListener('pause', () => {
-    console.log('paused');
+    if (controls.isSeeking() || videoElement.ended) {
+      return;
+    }
     stateMachine.transition(PlayerState.PAUSED);
   });
   videoElement.addEventListener('ended', () => {
-    console.log('ended');
     clearInterval(polling);
     polling = 0;
     stateMachine.transition(PlayerState.ENDED);
-  });
-  player.addEventListener('error', (e: any) => {
-    console.log('error', e);
-    stateMachine.transition(PlayerState.ERRORED);
-    // TODO: stop/exit player!
   });
 };
 
