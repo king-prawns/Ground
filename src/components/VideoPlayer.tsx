@@ -1,7 +1,7 @@
 import 'shaka-player/dist/controls.css';
 import './VideoPlayer.css';
 import React from 'react';
-import {pinefy, PlayerState} from '@king-prawns/pine-roots';
+import {pinefy, EPlayerState} from '@king-prawns/pine-roots';
 import connectDriver from '../core/connectDriver';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -63,7 +63,7 @@ class VideoPlayer extends React.Component<IProps, IState> {
       const {code, data} = e;
       // eslint-disable-next-line no-console
       console.error('Error code', code, 'message', data[1]?.message);
-      driver.onPlayerStateUpdate(PlayerState.ERRORED);
+      driver.onPlayerStateUpdate(EPlayerState.ERRORED);
       player.destroy();
     }
   }
