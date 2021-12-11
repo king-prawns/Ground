@@ -1,7 +1,7 @@
 import {IDriver, EPlayerState} from '@king-prawns/pine-roots';
 
 class StateMachine {
-  private _currentState: EPlayerState = EPlayerState.UNKNOWN;
+  private _currentState?: EPlayerState;
   private _isBuffering = false;
 
   constructor(
@@ -19,7 +19,7 @@ class StateMachine {
   public transition(state: EPlayerState): void {
     switch (state) {
       case EPlayerState.LOADING:
-        if (this._currentState === EPlayerState.UNKNOWN) {
+        if (!this._currentState) {
           this.onPlayerStateUpdate(EPlayerState.LOADING);
         }
         break;
