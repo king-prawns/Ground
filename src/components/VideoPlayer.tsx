@@ -39,6 +39,7 @@ class VideoPlayer extends React.Component<IProps, IState> {
 
   private async initPlayer(): Promise<void> {
     const videoElement = this.videoComponent.current;
+    videoElement!.volume = 0.5;
     const videoContainerElement = this.videoContainer.current;
 
     const player = new shaka.Player(videoElement);
