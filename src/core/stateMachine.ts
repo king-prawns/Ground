@@ -1,52 +1,55 @@
-import {Driver, PlayerState} from '@king-prawns/pine-roots';
+import {IDriver, EPlayerState} from '@king-prawns/pine-roots';
 
 class StateMachine {
-  private _currentState: PlayerState = PlayerState.UNKNOWN;
+  private _currentState?: EPlayerState;
   private _isBuffering = false;
 
-  constructor(private driver: Driver, private videoElement: HTMLVideoElement) {}
+  constructor(
+    private driver: IDriver,
+    private videoElement: HTMLVideoElement
+  ) {}
 
-  private onPlayerStateUpdate(state: PlayerState): void {
+  private onPlayerStateUpdate(state: EPlayerState): void {
     if (this._currentState !== state) {
       this._currentState = state;
       this.driver.onPlayerStateUpdate(state);
     }
   }
 
-  public transition(state: PlayerState): void {
+  public transition(state: EPlayerState): void {
     switch (state) {
-      case PlayerState.LOADING:
-        if (this._currentState === PlayerState.UNKNOWN) {
-          this.onPlayerStateUpdate(PlayerState.LOADING);
+      case EPlayerState.LOADING:
+        if (!this._currentState) {
+          this.onPlayerStateUpdate(EPlayerState.LOADING);
         }
         break;
-      case PlayerState.BUFFERING:
+      case EPlayerState.BUFFERING:
         if (
-          this._currentState === PlayerState.PLAYING ||
-          this._currentState === PlayerState.LOADING ||
-          this._currentState === PlayerState.PAUSED ||
-          this._currentState === PlayerState.ENDED
+          this._currentState === EPlayerState.PLAYING ||
+          this._currentState === EPlayerState.LOADING ||
+          this._currentState === EPlayerState.PAUSED ||
+          this._currentState === EPlayerState.ENDED
         ) {
           this._isBuffering = true;
-          this.onPlayerStateUpdate(PlayerState.BUFFERING);
+          this.onPlayerStateUpdate(EPlayerState.BUFFERING);
         }
         break;
-      case PlayerState.PLAYING:
-        if (this._currentState === PlayerState.PAUSED || !this._isBuffering) {
+      case EPlayerState.PLAYING:
+        if (this._currentState === EPlayerState.PAUSED || !this._isBuffering) {
           this.onPlayerStateUpdate(state);
         }
         break;
-      case PlayerState.PAUSED:
-        if (this._currentState === PlayerState.PLAYING || !this._isBuffering) {
+      case EPlayerState.PAUSED:
+        if (this._currentState === EPlayerState.PLAYING || !this._isBuffering) {
           this.onPlayerStateUpdate(state);
         }
         break;
-      case PlayerState.ENDED:
-        if (this._currentState === PlayerState.PLAYING) {
+      case EPlayerState.ENDED:
+        if (this._currentState === EPlayerState.PLAYING) {
           this.onPlayerStateUpdate(state);
         }
         break;
-      case PlayerState.ERRORED:
+      case EPlayerState.ERRORED:
         this.onPlayerStateUpdate(state);
         break;
     }
@@ -55,9 +58,9 @@ class StateMachine {
   public endBuffering(): void {
     this._isBuffering = false;
     if (this.videoElement.paused) {
-      this.onPlayerStateUpdate(PlayerState.PAUSED);
+      this.onPlayerStateUpdate(EPlayerState.PAUSED);
     } else {
-      this.onPlayerStateUpdate(PlayerState.PLAYING);
+      this.onPlayerStateUpdate(EPlayerState.PLAYING);
     }
   }
 }
