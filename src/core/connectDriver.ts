@@ -83,12 +83,17 @@ const connectDriver = (
     }
   });
   player.addEventListener('error', (e: any) => {
-    const {code, data} = e.detail;
-    // eslint-disable-next-line no-console
-    console.error('Error code', code, 'message', data[1]?.message);
-    stateMachine.transition(EPlayerState.ERRORED);
-    window.clearInterval(polling);
-    player.destroy();
+    const {code, data, severity} = e.detail;
+    const message = `Error code: ${code}, details: ${JSON.stringify(data)}`;
+    if (severity === shaka.util.Error.Severity.CRITICAL) {
+      // eslint-disable-next-line no-console
+      console.error(message);
+      stateMachine.transition(EPlayerState.ERRORED);
+      window.clearInterval(polling);
+    } else {
+      // eslint-disable-next-line no-console
+      console.warn(message);
+    }
   });
   videoElement.addEventListener('seeking', () => {
     if (!polling) {

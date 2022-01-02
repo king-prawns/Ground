@@ -63,7 +63,7 @@ class VideoPlayer extends React.Component<IProps, IState> {
     } catch (e: any) {
       const {code, data} = e;
       // eslint-disable-next-line no-console
-      console.error('Error code', code, 'message', data[1]?.message);
+      console.error('Error code', code, 'details', data[1]?.message);
       driver.onPlayerStateUpdate(EPlayerState.ERRORED);
       player.destroy();
     }
