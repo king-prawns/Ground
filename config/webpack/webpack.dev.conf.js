@@ -6,7 +6,7 @@ const path = require('path');
 
 module.exports = merge(base, {
   mode: 'development',
-  devtool: 'inline-source-map',
+  devtool: 'eval-cheap-source-map',
   output: {
     filename: 'app.js',
     publicPath: '/'

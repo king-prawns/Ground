@@ -3,6 +3,8 @@ import './VideoPlayer.css';
 import React from 'react';
 import {pinefy, EPlayerState} from '@king-prawns/pine-roots';
 import connectDriver from '../core/connectDriver';
+import StateMachine from '../core/stateMachine';
+import IConnection from '../interfaces/IConnection';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const shaka = require('shaka-player/dist/shaka-player.ui.js');
@@ -52,7 +54,16 @@ class VideoPlayer extends React.Component<IProps, IState> {
     const controls = ui.getControls();
 
     const {proxyManifestUrl, driver} = pinefy(MANIFEST);
-    connectDriver(player, controls, videoElement!, driver);
+
+    const stateMachine = new StateMachine(driver, videoElement!);
+
+    const connection: IConnection = connectDriver(
+      player,
+      controls,
+      videoElement!,
+      driver,
+      stateMachine
+    );
 
     const manifestUri = this.props.isProxyEnabled ? proxyManifestUrl : MANIFEST;
 
@@ -62,10 +73,11 @@ class VideoPlayer extends React.Component<IProps, IState> {
       console.log('The video has now been loaded!');
     } catch (e: any) {
       const {code, data} = e;
+      const message = `Error code: ${code}, details: ${JSON.stringify(data)}`;
       // eslint-disable-next-line no-console
-      console.error('Error code', code, 'details', data[1]?.message);
-      driver.onPlayerStateUpdate(EPlayerState.ERRORED);
-      player.destroy();
+      console.error(message);
+      stateMachine.transition(EPlayerState.ERRORED);
+      connection.destroy();
     }
   }
 

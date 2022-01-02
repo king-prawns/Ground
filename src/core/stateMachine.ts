@@ -56,6 +56,9 @@ class StateMachine {
   }
 
   public endBuffering(): void {
+    if (this._currentState === EPlayerState.ERRORED) {
+      return;
+    }
     this._isBuffering = false;
     if (this.videoElement.paused) {
       this.onPlayerStateUpdate(EPlayerState.PAUSED);

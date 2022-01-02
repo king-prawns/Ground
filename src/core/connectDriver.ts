@@ -1,4 +1,5 @@
 import {IDriver, EPlayerState} from '@king-prawns/pine-roots';
+import IConnection from '../interfaces/IConnection';
 import StateMachine from './stateMachine';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -8,13 +9,19 @@ const connectDriver = (
   player: any,
   controls: any,
   videoElement: HTMLVideoElement,
-  driver: IDriver
-): void => {
+  driver: IDriver,
+  stateMachine: StateMachine
+): IConnection => {
   let polling: number;
+
+  const clearPolling = (): void => {
+    window.clearInterval(polling);
+    polling = 0;
+  };
 
   const getPlayerStats = (): void => {
     if (!player) {
-      window.clearInterval(polling);
+      clearPolling();
     }
 
     const stats = player.getStats();
@@ -67,53 +74,77 @@ const connectDriver = (
         byteLength: response.data.byteLength
       });
     });
-  // eslint-disable-next-line prefer-const
+
   polling = window.setInterval(getPlayerStats, 1000);
 
-  const stateMachine = new StateMachine(driver, videoElement);
-
-  player.addEventListener('loading', () => {
+  const handleLoading = (): void => {
     stateMachine.transition(EPlayerState.LOADING);
-  });
-  player.addEventListener('buffering', (event: any) => {
+  };
+
+  const handleBuffering = (event: any): void => {
     if (event.buffering) {
       stateMachine.transition(EPlayerState.BUFFERING);
     } else {
       stateMachine.endBuffering();
     }
-  });
-  player.addEventListener('error', (e: any) => {
+  };
+
+  const handleError = (e: any): void => {
     const {code, data, severity} = e.detail;
     const message = `Error code: ${code}, details: ${JSON.stringify(data)}`;
     if (severity === shaka.util.Error.Severity.CRITICAL) {
       // eslint-disable-next-line no-console
       console.error(message);
       stateMachine.transition(EPlayerState.ERRORED);
-      window.clearInterval(polling);
+      clearPolling();
     } else {
       // eslint-disable-next-line no-console
       console.warn(message);
     }
-  });
-  videoElement.addEventListener('seeking', () => {
+  };
+
+  const handleSeeking = (): void => {
     if (!polling) {
       polling = window.setInterval(getPlayerStats, 500);
     }
-  });
-  videoElement.addEventListener('playing', () => {
+  };
+
+  const handlePlaying = (): void => {
     stateMachine.transition(EPlayerState.PLAYING);
-  });
-  videoElement.addEventListener('pause', () => {
+  };
+
+  const handlePause = (): void => {
     if (controls.isSeeking() || videoElement.ended) {
       return;
     }
     stateMachine.transition(EPlayerState.PAUSED);
-  });
-  videoElement.addEventListener('ended', () => {
-    window.clearInterval(polling);
-    polling = 0;
+  };
+
+  const handleEnded = (): void => {
+    clearPolling();
     stateMachine.transition(EPlayerState.ENDED);
-  });
+  };
+
+  player.addEventListener('loading', handleLoading);
+  player.addEventListener('buffering', handleBuffering);
+  player.addEventListener('error', handleError);
+  videoElement.addEventListener('seeking', handleSeeking);
+  videoElement.addEventListener('playing', handlePlaying);
+  videoElement.addEventListener('pause', handlePause);
+  videoElement.addEventListener('ended', handleEnded);
+
+  return {
+    destroy: (): void => {
+      player.removeEventListener('loading', handleLoading);
+      player.removeEventListener('buffering', handleBuffering);
+      player.removeEventListener('error', handleError);
+      videoElement.removeEventListener('seeking', handleSeeking);
+      videoElement.removeEventListener('playing', handlePlaying);
+      videoElement.removeEventListener('pause', handlePause);
+      videoElement.removeEventListener('ended', handleEnded);
+      clearPolling();
+    }
+  };
 };
 
 export default connectDriver;
