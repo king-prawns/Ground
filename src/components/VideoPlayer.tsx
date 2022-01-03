@@ -41,7 +41,6 @@ class VideoPlayer extends React.Component<IProps, IState> {
 
   private async initPlayer(): Promise<void> {
     const videoElement = this.videoComponent.current;
-    videoElement!.volume = 0.5;
     const videoContainerElement = this.videoContainer.current;
 
     const player = new shaka.Player(videoElement);
@@ -84,7 +83,7 @@ class VideoPlayer extends React.Component<IProps, IState> {
   render(): JSX.Element {
     return (
       <div className="video-container" ref={this.videoContainer}>
-        <video ref={this.videoComponent} />
+        <video ref={this.videoComponent} autoPlay muted />
       </div>
     );
   }
