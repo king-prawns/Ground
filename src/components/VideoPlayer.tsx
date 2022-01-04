@@ -44,6 +44,18 @@ class VideoPlayer extends React.Component<IProps, IState> {
     const videoContainerElement = this.videoContainer.current;
 
     const player = new shaka.Player(videoElement);
+    player.configure({
+      manifest: {
+        retryParameters: {
+          maxAttempts: 5
+        }
+      },
+      streaming: {
+        retryParameters: {
+          maxAttempts: 5
+        }
+      }
+    });
     const ui = new shaka.ui.Overlay(
       player,
       videoContainerElement,
