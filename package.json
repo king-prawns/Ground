@@ -1,18 +1,18 @@
 {
-  "name": "pine-client",
+  "name": "ground",
   "version": "1.0.0",
   "description": "Client application for PiNE",
   "main": "dist/app.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/king-prawns/PiNE-Client.git"
+    "url": "git+https://github.com/king-prawns/Ground.git"
   },
   "author": "king-prawns",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/king-prawns/PiNE-Client/issues"
+    "url": "https://github.com/king-prawns/Ground/issues"
   },
-  "homepage": "https://github.com/king-prawns/PiNE-Client#readme",
+  "homepage": "https://github.com/king-prawns/Ground#readme",
   "scripts": {
     "dev": "node ./config/webpack/dev",
     "build": "node ./config/webpack/prod",
