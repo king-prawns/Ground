@@ -105,7 +105,7 @@ const connectDriver = (
 
   const handleSeeking = (): void => {
     if (!polling) {
-      polling = window.setInterval(getPlayerStats, 500);
+      polling = window.setInterval(getPlayerStats, 1000);
     }
   };
 
