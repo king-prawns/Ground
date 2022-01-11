@@ -64,7 +64,9 @@ class VideoPlayer extends React.Component<IProps, IState> {
 
     const controls = ui.getControls();
 
-    const {proxyManifestUrl, driver} = pinefy(MANIFEST);
+    const {proxyManifestUrl, driver} = pinefy({
+      manifestUrl: MANIFEST
+    });
 
     const stateMachine = new StateMachine(driver, videoElement!);
 
