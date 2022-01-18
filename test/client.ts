@@ -11,7 +11,7 @@ const client = async (): Promise<IClient> => {
   return {
     open: async (): Promise<void> => {
       const page = await browser.newPage();
-      page.goto('http://localhost:8081');
+      await page.goto('http://localhost:8081');
     },
     close: async (): Promise<void> => {
       await browser.close();
