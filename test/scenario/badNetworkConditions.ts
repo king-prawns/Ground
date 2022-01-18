@@ -60,7 +60,7 @@ const badNetworkConditions: ITestScenario = {
       ]
     },
     {
-      it: 'should continue PLAYING at the same variant',
+      it: 'should continue PLAYING without BUFFERING',
       assertions: [
         {
           type: EAssertionType.PLAYER_STATE,
