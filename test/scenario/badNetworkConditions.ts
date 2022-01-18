@@ -20,19 +20,12 @@ const badNetworkConditions: ITestScenario = {
       type: EFilter.LATENCY,
       delayMs: 500,
       fromMs: 0,
-      toMs: 7000
+      toMs: 15000
     },
     {
       type: EFilter.OFFLINE,
       fromMs: 7000,
       toMs: 8500
-    },
-    {
-      type: EFilter.JITTER,
-      delayMs: 400,
-      jitterMs: 300,
-      fromMs: 8500,
-      toMs: 15000
     }
   ],
   testCases: [
@@ -42,7 +35,7 @@ const badNetworkConditions: ITestScenario = {
         {
           type: EAssertionType.PLAYER_STATE,
           fromMs: 0,
-          toMs: 3000,
+          toMs: 8000,
           matcher: EMatcher.EQUAL,
           expected: [
             EPlayerState.LOADING,
@@ -71,22 +64,22 @@ const badNetworkConditions: ITestScenario = {
       assertions: [
         {
           type: EAssertionType.PLAYER_STATE,
-          fromMs: 4000,
-          toMs: 10000,
-          matcher: EMatcher.ENDS_WITH,
-          expected: EPlayerState.PLAYING
+          fromMs: 8000,
+          toMs: 15000,
+          matcher: EMatcher.EQUAL,
+          expected: [EPlayerState.PLAYING]
         },
         {
           type: EAssertionType.VARIANT,
-          fromMs: 4000,
-          toMs: 10000,
+          fromMs: 3000,
+          toMs: 15000,
           matcher: EMatcher.GREATER_THAN,
-          expected: 2
+          expected: 1.5
         },
         {
           type: EAssertionType.VARIANT,
-          fromMs: 4000,
-          toMs: 10000,
+          fromMs: 3000,
+          toMs: 15000,
           matcher: EMatcher.LESS_THAN,
           expected: 3
         }

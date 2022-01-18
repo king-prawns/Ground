@@ -16,7 +16,7 @@ const optimalNetworkConditions: ITestScenario = {
         {
           type: EAssertionType.PLAYER_STATE,
           fromMs: 0,
-          toMs: 3000,
+          toMs: 5000,
           matcher: EMatcher.EQUAL,
           expected: [
             EPlayerState.LOADING,
@@ -46,21 +46,21 @@ const optimalNetworkConditions: ITestScenario = {
         {
           type: EAssertionType.PLAYER_STATE,
           fromMs: 4000,
-          toMs: 10000,
-          matcher: EMatcher.ENDS_WITH,
-          expected: EPlayerState.PLAYING
+          toMs: 15000,
+          matcher: EMatcher.EQUAL,
+          expected: [EPlayerState.PLAYING]
         },
         {
           type: EAssertionType.VARIANT,
           fromMs: 4000,
-          toMs: 10000,
+          toMs: 15000,
           matcher: EMatcher.GREATER_THAN,
           expected: 2
         },
         {
           type: EAssertionType.VARIANT,
           fromMs: 4000,
-          toMs: 10000,
+          toMs: 15000,
           matcher: EMatcher.LESS_THAN,
           expected: 3
         }
