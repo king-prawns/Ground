@@ -1,5 +1,6 @@
 import {
   EAssertionType,
+  EFilter,
   EMatcher,
   EPlayerState,
   ITestScenario
@@ -8,7 +9,14 @@ import {
 const optimalNetworkConditions: ITestScenario = {
   describe: 'Optimal network conditions',
   durationMs: 15000,
-  filters: [],
+  filters: [
+    {
+      type: EFilter.THROTTLE,
+      bandwidthKbps: 10240,
+      fromMs: 0,
+      toMs: 15000
+    }
+  ],
   testCases: [
     {
       it: 'should goes from LOADING to PLAYING',

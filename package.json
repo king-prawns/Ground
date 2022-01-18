@@ -20,7 +20,7 @@
     "prettier": "prettier --config ./config/prettier/.prettierrc --list-different src/**/*.ts --ignore-path ./config/prettier/.prettierignore",
     "typecheck": "tsc --project ./config/typescript/tsconfig.typecheck.json",
     "start": "http-server ./dist -p 8082 --silent",
-    "test": "ts-node ./test/run.ts"
+    "test:feature": "ts-node ./test/run.ts"
   },
   "husky": {
     "hooks": {
