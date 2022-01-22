@@ -1,0 +1,66 @@
+{
+  "describe": "Optimal network conditions",
+  "durationMs": 15000,
+  "filters": [
+    {
+      "type": "throttle",
+      "bandwidthKbps": 10240,
+      "fromMs": 0,
+      "toMs": 15000
+    }
+  ],
+  "testCases": [
+    {
+      "it": "should goes from LOADING to PLAYING",
+      "assertions": [
+        {
+          "type": "playerState",
+          "fromMs": 0,
+          "toMs": 5000,
+          "matcher": "equal",
+          "expected": ["LOADING", "BUFFERING", "PLAYING"]
+        },
+        {
+          "type": "variant",
+          "fromMs": 0,
+          "toMs": 3000,
+          "matcher": "greaterThan",
+          "expected": 2
+        },
+        {
+          "type": "variant",
+          "fromMs": 0,
+          "toMs": 3000,
+          "matcher": "lessThan",
+          "expected": 3
+        }
+      ]
+    },
+    {
+      "it": "should continue PLAYING without BUFFERING",
+      "assertions": [
+        {
+          "type": "playerState",
+          "fromMs": 4000,
+          "toMs": 15000,
+          "matcher": "equal",
+          "expected": ["PLAYING"]
+        },
+        {
+          "type": "variant",
+          "fromMs": 4000,
+          "toMs": 15000,
+          "matcher": "greaterThan",
+          "expected": 2
+        },
+        {
+          "type": "variant",
+          "fromMs": 4000,
+          "toMs": 15000,
+          "matcher": "lessThan",
+          "expected": 3
+        }
+      ]
+    }
+  ]
+}
