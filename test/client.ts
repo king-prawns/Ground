@@ -1,5 +1,4 @@
-import {Browser} from 'puppeteer-core';
-import {IClient} from '@king-prawns/pine-runner';
+import {IClient, Browser} from '@king-prawns/pine-runner';
 
 const client = (): IClient => {
   return {
