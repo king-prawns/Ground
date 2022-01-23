@@ -9,5 +9,11 @@
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "prettier.configPath": "./config/prettier/.prettierrc",
   "prettier.ignorePath": "./config/prettier/.prettierignore",
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "json.schemas": [
+    {
+      "fileMatch": ["/*.pine.json"],
+      "url": "/node_modules/@king-prawns/pine-runner/src/schema/pine.json"
+    }
+  ]
 }

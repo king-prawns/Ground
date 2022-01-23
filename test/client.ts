@@ -1,20 +1,10 @@
-import puppeteer from 'puppeteer-core';
-import {PATH_TO_CHROME} from './const';
-import {IClient} from '@king-prawns/pine-runner';
+import {IClient, Browser} from '@king-prawns/pine-runner';
 
-const client = async (): Promise<IClient> => {
-  const browser = await puppeteer.launch({
-    headless: false,
-    executablePath: PATH_TO_CHROME
-  });
-
+const client = (): IClient => {
   return {
-    open: async (): Promise<void> => {
+    open: async (browser: Browser): Promise<void> => {
       const page = await browser.newPage();
       await page.goto('http://localhost:8081');
-    },
-    close: async (): Promise<void> => {
-      await browser.close();
     }
   };
 };
